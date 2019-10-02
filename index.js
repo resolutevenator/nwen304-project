@@ -22,7 +22,7 @@ app.use(express.static('public'))
 
 var port = process.env.PORT || 8080;
 
-var books = {0: {name: "Book 1", description: "this is a book", key: 0}};
+var books = {0: {name: "Book 1", description: "this is a book", author: "author1", category: "category1", key: 0}};
 
 app.get('/books', (req, res) => {
     return res.send(books);
