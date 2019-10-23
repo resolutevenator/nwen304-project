@@ -1,0 +1,44 @@
+CREATE TABLE book (
+    bookid serial NOT NULL,
+    title character(60) NOT NULL,
+    stock smallint DEFAULT 1 NOT NULL,
+    author int NOT NULL,
+    category int NOT NULL,
+    CONSTRAINT book_id CHECK ((bookid >= 0))
+);
+
+CREATE TABLE site_user (
+    userid serial NOT NULL,
+    email text NOT NULL,
+    salt smallint,
+    password smallint,
+    address text, 
+    UserType text
+);
+
+CREATE TABLE author (
+    authorid serial NOT NULL,
+    name varchar(32) NOT NULL
+);
+
+CREATE TABLE category (
+    categoryid serial NOT NULL,
+    name varchar(32) NOT NULL
+);
+
+CREATE TYPE status AS ENUM ('processing', 'shipping', 'delivered');
+
+CREATE TABLE purchase (
+    userid int NOT NULL,
+    productid int[] NOT NULL,
+    time date NOT NULL,
+    address text,
+    cost money NOT NULL,
+    current_status status 
+);
+
+CREATE TABLE email_reset (
+    userid int NOT NULL,
+    timeRequested date NOT NULL,
+    code serial NOT NULL
+);
