@@ -24,7 +24,8 @@ CREATE TABLE category (
 
 CREATE TABLE book (
     bookid serial NOT NULL,
-    title character(60) NOT NULL,
+    title varchar(60) NOT NULL,
+    description text,
     stock smallint DEFAULT 1 NOT NULL,
     author int NOT NULL,
     category int NOT NULL,

@@ -1,0 +1,40 @@
+INSERT INTO author(name) VALUES ('John Steed');
+INSERT INTO author(name) VALUES ('Emily');
+INSERT INTO author(name) VALUES ('Brad');
+INSERT INTO author(name) VALUES ('Adam Sadm');
+INSERT INTO author(name) VALUES ('James');
+INSERT INTO author(name) VALUES ('The Law');
+INSERT INTO author(name) VALUES ('Timothy Zahn');
+
+INSERT INTO category(name) VALUES ('Horror');
+INSERT INTO category(name) VALUES ('Comedy');
+INSERT INTO category(name) VALUES ('Romance');
+INSERT INTO category(name) VALUES ('Action');
+INSERT INTO category(name) VALUES ('Adventure');
+INSERT INTO category(name) VALUES ('Crime');
+INSERT INTO category(name) VALUES ('Mystery');
+INSERT INTO category(name) VALUES ('Science Fiction');
+
+INSERT INTO book(title, description, stock, author, category)
+VALUES ('Scary Book 1', 'Super scary, book 1 is scary', 10, 1, 1);
+
+INSERT INTO book(title, description, stock, author, category)
+VALUES ('Scary Book 2', 'Super scary, book 2 is suuuper scare', 7, 1, 1);
+
+INSERT INTO book(title, description, stock, author, category)
+VALUES ('Funny Book', 'Fun for the whole family', 23, 3, 2);
+
+INSERT INTO book(title, description, stock, author, category)
+VALUES ('Generic Romance Novel', 'Pretty hot', 2, 2, 3);
+
+INSERT INTO book(title, description, stock, author, category)
+VALUES ('Action Packed Novel', 'Classic arnie book', 25, 4, 4);
+
+INSERT INTO book(title, description, stock, author, category)
+VALUES ('Indiana Smones', 'Harrison forge origin story', 0, 5, 5);
+
+INSERT INTO book(title, description, stock, author, category)
+VALUES ('Sherlock Bones: The case of the missing tooth', 'Sherlock Bones #1', 4, 6, 6);
+
+INSERT INTO book(title, description, stock, author, category)
+VALUES ('Star Wars: Thrawn', 'Hit author Timothy Zahn is back again, with a great Star Wars novel', 10, 7, 8);
