@@ -1,11 +1,4 @@
-CREATE TABLE book (
-    bookid serial NOT NULL,
-    title character(60) NOT NULL,
-    stock smallint DEFAULT 1 NOT NULL,
-    author int NOT NULL,
-    category int NOT NULL,
-    CONSTRAINT book_id CHECK ((bookid >= 0))
-);
+CREATE TYPE usertype AS ENUM ('user', 'admin');
 
 CREATE TABLE site_user (
     userid serial NOT NULL,
@@ -13,17 +6,32 @@ CREATE TABLE site_user (
     salt smallint,
     password smallint,
     address text, 
-    UserType text
+    UserType usertype,
+    PRIMARY KEY (userid)
 );
 
 CREATE TABLE author (
     authorid serial NOT NULL,
-    name varchar(32) NOT NULL
+    name varchar(32) NOT NULL,
+    PRIMARY KEY (authorid)
 );
 
 CREATE TABLE category (
     categoryid serial NOT NULL,
-    name varchar(32) NOT NULL
+    name varchar(32) NOT NULL,
+    PRIMARY KEY (categoryid)
+);
+
+CREATE TABLE book (
+    bookid serial NOT NULL,
+    title character(60) NOT NULL,
+    stock smallint DEFAULT 1 NOT NULL,
+    author int NOT NULL,
+    category int NOT NULL,
+    PRIMARY KEY (bookid),
+    FOREIGN KEY (author) REFERENCES author(authorid) ON UPDATE CASCADE,
+    FOREIGN KEY (category) REFERENCES category(categoryid) ON UPDATE CASCADE,
+    CONSTRAINT book_id CHECK ((bookid >= 0))
 );
 
 CREATE TYPE status AS ENUM ('processing', 'shipping', 'delivered');
@@ -34,11 +42,15 @@ CREATE TABLE purchase (
     time date NOT NULL,
     address text,
     cost money NOT NULL,
-    current_status status 
+    current_status status,
+    PRIMARY KEY (userid, time),
+    FOREIGN KEY (userid) REFERENCES site_user(userid) ON UPDATE CASCADE
 );
 
 CREATE TABLE email_reset (
     userid int NOT NULL,
     timeRequested date NOT NULL,
-    code serial NOT NULL
+    code serial NOT NULL,
+    PRIMARY KEY (userid, code),
+    FOREIGN KEY (userid) REFERENCES site_user(userid) ON UPDATE CASCADE
 );
