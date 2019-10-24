@@ -3,10 +3,10 @@ CREATE TYPE usertype AS ENUM ('user', 'admin');
 CREATE TABLE site_user (
     userid serial NOT NULL,
     email text NOT NULL,
-    salt smallint,
-    password smallint,
+    salt char(32) NOT NULL,
+    password varchar(32) NOT NULL,
     address text, 
-    UserType usertype,
+    usertype usertype,
     PRIMARY KEY (userid)
 );
 
@@ -51,7 +51,7 @@ CREATE TABLE purchase (
 CREATE TABLE email_reset (
     userid int NOT NULL,
     timeRequested date NOT NULL,
-    code serial NOT NULL,
+    code char(32) NOT NULL,
     PRIMARY KEY (userid, code),
     FOREIGN KEY (userid) REFERENCES site_user(userid) ON UPDATE CASCADE
 );

@@ -23,6 +23,14 @@ app.get('/books/author/:authorid', db.getBooksByAuthor);
 
 app.get('/books/category/:categoryid', db.getBooksByCategory);
 
+app.get('/authors', db.getAuthors);
+
+app.get('/categories', db.getCategories);
+
+app.get('/user/:userid', db.getUserById);
+
+app.post('/user/newuser', db.postNewUser);
+
 app.listen(port, function () {
     console.log(`Example app listening on port ${port}!`);
 });
