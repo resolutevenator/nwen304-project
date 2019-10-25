@@ -7,19 +7,22 @@ CREATE TABLE site_user (
     password varchar(32) NOT NULL,
     address text, 
     usertype usertype,
-    PRIMARY KEY (userid)
+    PRIMARY KEY (userid),
+    UNIQUE (email)
 );
 
 CREATE TABLE author (
     authorid serial NOT NULL,
     name varchar(32) NOT NULL,
-    PRIMARY KEY (authorid)
+    PRIMARY KEY (authorid),
+    UNIQUE (name)
 );
 
 CREATE TABLE category (
     categoryid serial NOT NULL,
     name varchar(32) NOT NULL,
-    PRIMARY KEY (categoryid)
+    PRIMARY KEY (categoryid),
+    UNIQUE (name)
 );
 
 CREATE TABLE book (
