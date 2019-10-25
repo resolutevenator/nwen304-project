@@ -31,6 +31,14 @@ app.get('/user/:userid', db.getUserById);
 
 app.post('/user/newuser', db.postNewUser);
 
+app.post('/books/newbook', db.postNewBook);
+
+app.post('/user/emailreset', db.postNewEmailReset);
+
+app.post('/authors/new', db.postNewAuthor);
+
+app.post('/categories/new', db.postNewCategory);
+
 app.listen(port, function () {
     console.log(`Example app listening on port ${port}!`);
 });

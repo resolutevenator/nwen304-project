@@ -10,7 +10,7 @@ const pool = new Pool({
 
 const getAllBooks = (req, res) => {
     pool.query('SELECT * FROM book ORDER BY bookid ASC', (error, result) => {
-        if(error) {
+        if (error) {
             throw error;
         }
 
@@ -90,25 +90,80 @@ const postNewUser = (req, res) => {
     const email = req.body.email;
     const salt = req.body.salt;
     const password = req.body.password;
-    var address = null;
+    const address = req.body.address;
     var usertype = 'user';
-    if (req.body.address) {
-        address = req.body.address;
-    }
     if (req.body.usertype) {
         usertype = req.body.usertype;
     }
 
     pool.query('INSERT INTO site_user (email, salt, password, address, usertype) VALUES ($1, $2, $3, $4, $5)',
-        [email, salt, password, address, usertype],
-        (error, result) => {
-            if (error) {
-                throw error;
-            }
+    [email, salt, password, address, usertype],
+    (error, result) => {
+        if (error) {
+            throw error;
+        }
+        
+        res.status(201).send(`User added`);
+    })
 
-            res.status(201).send(`User added with ID: ${result.userid}`);
-        })
+}
 
+const postNewBook = (req, res) => {
+    const {title, description, stock, author, category} = req.body;
+
+    pool.query('INSERT INTO book (title, description, stock, author, category) VALUES ($1, $2, $3, $4, $5)',
+    [title, description, stock, author, category],
+    (error, result) => {
+        if (error) {
+            throw error;
+        }
+
+        res.status(201).send(`Book added`);
+    })
+}
+
+const postNewEmailReset = (req, res) => {
+    const {userid, code} = req.body;
+
+    const timeRequested = new Date();
+
+    pool.query('INSERT INTO email_reset VALUES ($1, $2, $3)',
+    [userid, timeRequested, code],
+    (error, result) => {
+        if (error) {
+            throw error;
+        }
+
+        res.status(201).send('Email Reset added');
+    })
+}
+
+const postNewAuthor = (req, res) => {
+    const name = req.body.name;
+
+    pool.query('INSERT INTO author VALUES ($1)',
+    [name],
+    (error, result) => {
+        if (error) {
+            throw error;
+        }
+
+        res.status(201).send('Author added');
+    })
+}
+
+const postNewCategory = (req, res) => {
+    const name = req.body.name;
+
+    pool.query('INSERT INTO category VALUES ($1)',
+    [name],
+    (error, result) => {
+        if (error) {
+            throw error;
+        }
+
+        res.status(201).send('Category added');
+    })
 }
 
 
@@ -120,5 +175,9 @@ module.exports = {
     getAuthors,
     getCategories,
     getUserById,
-    postNewUser
+    postNewUser,
+    postNewBook,
+    postNewEmailReset,
+    postNewAuthor,
+    postNewCategory
 }
