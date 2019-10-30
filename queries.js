@@ -1,11 +1,7 @@
 const Pool = require('pg').Pool;
 
 const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'nwen304_groupproject',
-    password: 'password',
-    port: 5432
+    connectionString: process.env.DATABASE_URL,
 });
 
 const getAllBooks = (req, res) => {
