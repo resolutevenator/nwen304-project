@@ -5,7 +5,7 @@ const pool = new Pool({
 });
 
 const getAllBooks = (req, res) => {
-    pool.query('SELECT * FROM book ORDER BY bookid ASC', (error, result) => {
+    pool.query('SELECT bookid, title, author.name as author, description, category.name AS category, stock FROM book INNER JOIN author ON authorid=author INNER JOIN Category ON category=categoryid', (error, result) => {
         if (error) {
             throw error;
         }
