@@ -85,9 +85,9 @@ const getUserById = (req, res) => {
 
 const postNewUser = (req, res) => {
     const email = req.body.email;
-    const salt = crypto.randomBytes(16).toString();
+    const salt = Crypto.randomBytes(16).toString();
 
-    const hash = crypto.createHash('sha256')
+    const hash = Crypto.createHash('sha256')
     hash.update(req.body.password +  salt)
     const password = hash.digest('ascii');
     const address = req.body.address;
