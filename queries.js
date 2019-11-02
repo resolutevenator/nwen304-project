@@ -1,4 +1,5 @@
 const Pool = require('pg').Pool;
+const Crypto = require('crypto');
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
@@ -84,8 +85,11 @@ const getUserById = (req, res) => {
 
 const postNewUser = (req, res) => {
     const email = req.body.email;
-    const salt = req.body.salt;
-    const password = req.body.password;
+    const salt = crypto.randomBytes(16).toString();
+
+    const hash = crypto.createHash('sha256')
+    hash.update(req.body.password +  salt)
+    const password = hash.digest('ascii');
     const address = req.body.address;
     var usertype = 'user';
     if (req.body.usertype) {
@@ -98,7 +102,6 @@ const postNewUser = (req, res) => {
         if (error) {
             throw error;
         }
-        
         res.status(201).send(`User added`);
     })
 
