@@ -1,6 +1,22 @@
 const Pool = require('pg').Pool;
-const Crypto = require('crypto');
 const bcrypt = require('bcryptjs');
+const Fuse = require('fuse.js');
+
+const searchOptions = {
+    shouldSort: true,
+    findAllMatches: true,
+    threshold: 0.3,
+    location: 0,
+    distance: 16,
+    maxPatternLength: 32,
+    minMatchCharLength: 1,
+    keys: [
+        "title",
+        "description",
+        "authorname",
+        "categoryname"
+    ]
+};
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
@@ -52,6 +68,21 @@ const getBooksByCategory = (req, res) => {
     })
 }
 
+const searchBooks = (req, res) => {
+    pool.query('SELECT bookid, title, description, author.name as authorname, category.name as categoryname FROM book INNER JOIN author ON book.author = author.authorid INNER JOIN category ON book.category = category.categoryid', (error, result) => {
+        if (error) {
+            throw error;
+        }
+
+        const query = req.params.query;
+
+        const fuse = new Fuse(result.rows, searchOptions);
+        const searchResults = fuse.search(query);
+
+        res.status(200).json(searchResults);
+    })
+}
+
 const getAuthors = (req, res) => {
     pool.query('SELECT * FROM author ORDER BY authorid ASC', (error, result) => {
         if (error) {
@@ -95,82 +126,81 @@ const postNewUser = (req, res) => {
     }
 
     pool.query('INSERT INTO site_user (email, password, address, usertype) VALUES ($1, $2, $3, $4)',
-    [email, password, address, usertype],
-    (error, result) => {
-        if (error) {
-            throw error;
-        }
-        res.status(201).send(`User added`);
-    })
+        [email, password, address, usertype],
+        (error, result) => {
+            if (error) {
+                throw error;
+            }
+            res.status(201).send(`User added`);
+        })
 
 }
 
 const postNewBook = (req, res) => {
-    const {title, description, stock, author, category} = req.body;
+    const { title, description, stock, author, category } = req.body;
 
     pool.query('INSERT INTO book (title, description, stock, author, category) VALUES ($1, $2, $3, $4, $5)',
-    [title, description, stock, author, category],
-    (error, result) => {
-        if (error) {
-            throw error;
-        }
+        [title, description, stock, author, category],
+        (error, result) => {
+            if (error) {
+                throw error;
+            }
 
-        res.status(201).send(`Book added`);
-    })
+            res.status(201).send(`Book added`);
+        })
 }
 
 const postNewEmailReset = (req, res) => {
-    const {userid, code} = req.body;
+    const { userid, code } = req.body;
 
     const timeRequested = new Date();
 
     pool.query('INSERT INTO email_reset VALUES ($1, $2, $3)',
-    [userid, timeRequested, code],
-    (error, result) => {
-        if (error) {
-            throw error;
-        }
+        [userid, timeRequested, code],
+        (error, result) => {
+            if (error) {
+                throw error;
+            }
 
-        res.status(201).send('Email Reset added');
-    })
+            res.status(201).send('Email Reset added');
+        })
 }
 
 const postNewAuthor = (req, res) => {
     const name = req.body.name;
 
     pool.query('INSERT INTO author VALUES ($1)',
-    [name],
-    (error, result) => {
-        if (error) {
-            throw error;
-        }
+        [name],
+        (error, result) => {
+            if (error) {
+                throw error;
+            }
 
-        res.status(201).send('Author added');
-    })
+            res.status(201).send('Author added');
+        })
 }
 
 const postNewCategory = (req, res) => {
     const name = req.body.name;
 
     pool.query('INSERT INTO category VALUES ($1)',
-    [name],
-    (error, result) => {
-        if (error) {
-            throw error;
-        }
+        [name],
+        (error, result) => {
+            if (error) {
+                throw error;
+            }
 
-        res.status(201).send('Category added');
-    })
+            res.status(201).send('Category added');
+        })
 }
 
 function postLogin(req, res) {
-  const {email, password} = req.body;
-  pool.query('SELECT * FROM site_user WHERE email = $1;', [email])
-    .then( ({rows}) => 
-      {
-        const auth = bcrypt.compareSync(req.body.password, rows[0].password);
-        res.send(auth);
-      });
+    const { email, password } = req.body;
+    pool.query('SELECT * FROM site_user WHERE email = $1;', [email])
+        .then(({ rows }) => {
+            const auth = bcrypt.compareSync(req.body.password, rows[0].password);
+            res.send(auth);
+        });
 
 }
 
@@ -180,6 +210,7 @@ module.exports = {
     getBookById,
     getBooksByAuthor,
     getBooksByCategory,
+    searchBooks,
     getAuthors,
     getCategories,
     getUserById,
