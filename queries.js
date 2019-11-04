@@ -24,6 +24,14 @@ const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
 });
 
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: `${process.env.EMAIL_ADDRESS}`,
+        pass: `${process.env.EMAIL_PASSWORD}`,
+    }
+});
+
 const getAllBooks = (req, res) => {
     pool.query('SELECT bookid, title, author.name as author, description, category.name AS category, stock FROM book INNER JOIN author ON authorid=author INNER JOIN Category ON category=categoryid', (error, result) => {
         if (error) {
@@ -174,8 +182,23 @@ const postNewEmailReset = (req, res) => {
                         }
                     })
 
-                const transporter = nodemailer.createTransport({
-                    service: 'gmail',
+                const mailOptions = {
+                    from: 'nwen304reset@gmail.com',
+                    to: `${emailLC}`,
+                    subject: 'NWEN304 Bookstore: Link to Reset Password',
+                    text:
+                        `You are receiving theis because you (or someone else) has requested the reset of the password for your account with NWEN304 Bookstore. \n\n` + 
+                        `Please click on the following link, or paste it into your browser, to complete the process. This link will expire within one hour. \n\n` + 
+                        `insert link ${code}` + 
+                        `If you did not request this, please ignore this email and your password will remain unchanged. \n`
+                }
+
+                transporter.sendMail(mailOptions, function(err, response) {
+                    if(err) {
+                        console.error(err);
+                    } else {
+                        console.log(response);
+                    }
                 })
             } else {
                 console.log("email not in database");

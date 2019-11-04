@@ -59,7 +59,7 @@ app.post('/user/newuser', db.postNewUser);
 
 app.post('/books/newbook', db.postNewBook);
 
-app.post('/user/emailreset', db.postNewEmailReset);
+app.post('/user/passwordreset', db.postNewEmailReset);
 
 app.post('/authors/new', db.postNewAuthor);
 

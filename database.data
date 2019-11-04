@@ -53,7 +53,7 @@ CREATE TABLE purchase (
 CREATE TABLE email_reset (
     userid int NOT NULL,
     timeRequested date NOT NULL,
-    code char(32) NOT NULL,
+    code varchar NOT NULL,
     PRIMARY KEY (userid, code),
     FOREIGN KEY (userid) REFERENCES site_user(userid) ON UPDATE CASCADE
 );
