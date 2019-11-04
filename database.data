@@ -3,8 +3,8 @@ CREATE TYPE usertype AS ENUM ('user', 'admin');
 CREATE TABLE site_user (
     userid serial NOT NULL,
     email text NOT NULL,
-    salt char(32) NOT NULL,
-    password varchar(32) NOT NULL,
+    salt char(16) NOT NULL,
+    password char(32) NOT NULL,
     address text, 
     usertype usertype,
     PRIMARY KEY (userid),
