@@ -1,6 +1,8 @@
 const Pool = require('pg').Pool;
 const bcrypt = require('bcryptjs');
 const Fuse = require('fuse.js');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 
 const searchOptions = {
     shouldSort: true,
@@ -151,19 +153,37 @@ const postNewBook = (req, res) => {
 }
 
 const postNewEmailReset = (req, res) => {
-    const { userid, code } = req.body;
+    const { email } = req.body;
 
     const timeRequested = new Date();
 
-    pool.query('INSERT INTO email_reset VALUES ($1, $2, $3)',
-        [userid, timeRequested, code],
-        (error, result) => {
-            if (error) {
-                throw error;
-            }
+    const emailLC = email.toLowerCase();
 
-            res.status(201).send('Email Reset added');
-        })
+    pool.query('SELECT * FROM site_user WHERE email = $1',
+        [emailLC])
+        .then(({ rows }) => {
+            if (rows[0]) {
+                const user = rows[0];
+                const code = crypto.randomBytes(20).toString('hex');
+
+                pool.query('INSERT INTO email_reset VALUES ($1, $2, $3)',
+                    [user.userid, timeRequested, code],
+                    (error, result) => {
+                        if (error) {
+                            throw error;
+                        }
+                    })
+
+                const transporter = nodemailer.createTransport({
+                    service: 'gmail',
+                })
+            } else {
+                console.log("email not in database");
+            }
+        }
+        );
+    res.status(200).send('okay');
+
 }
 
 const postNewAuthor = (req, res) => {
