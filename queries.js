@@ -247,6 +247,30 @@ function postLogin(req, res) {
 
 }
 
+const updatePassword = (req, res) => {
+    const { code, newPassword } = req.body;
+
+    pool.query('SELECT * FROM email_reset WHERE code = $1',
+    [code],
+    (error, result) => {
+        if(error) {
+            throw error;
+        }
+
+        if(result.rows[0]) {
+            const userid = result.rows[0].userid;
+            const password = bcrypt.hashSync(newPassword, 8);
+
+            pool.query('UPDATE site_user SET password = $1 WHERE userid = $2',
+            [password, userid]);
+
+            pool.query('DELETE FROM email_reset WHERE code = $1',
+            [code]);
+
+            res.status(201).send('Password Updated Successfully');
+        }
+    })
+}
 
 module.exports = {
     getAllBooks,
@@ -262,5 +286,6 @@ module.exports = {
     postNewEmailReset,
     postNewAuthor,
     postNewCategory,
-    postLogin
+    postLogin,
+    updatePassword
 }

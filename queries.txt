@@ -3,3 +3,5 @@ curl -X POST -H "Content-Type:application/json" http://localhost:5000/user/login
 curl -X POST -H "Content-Type:application/json" http://localhost:5000/user/newuser -d '{"email":"ryanasaurus97@gmail.com","password":"123456","address":"address"}'
 
 curl -X POST -H "Content-Type:application/json" http://localhost:5000/user/passwordreset -d '{"email":"ryanasaurus97@gmail.com"}'
+
+curl -X PUT -H "Content-Type:application/json" http://localhost:5000/user/updatepassword -d '{"code":"27b4c2b012d9b9c827800739b30470b4f5fac1e9", "newPassword":"12335"}'

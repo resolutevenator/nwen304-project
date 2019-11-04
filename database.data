@@ -52,7 +52,7 @@ CREATE TABLE purchase (
 
 CREATE TABLE email_reset (
     userid int NOT NULL,
-    timeRequested date NOT NULL,
+    timeRequested timestamp with time zone NOT NULL,
     code varchar NOT NULL,
     PRIMARY KEY (userid, code),
     FOREIGN KEY (userid) REFERENCES site_user(userid) ON UPDATE CASCADE
