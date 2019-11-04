@@ -1,0 +1,19 @@
+.progress-bar.bg-weakest {
+    background-color: #d7191c;
+}
+
+.progress-bar.bg-weak {
+    background-color: #fdae61;
+}
+
+.progress-bar.bg-ok {
+    background-color: #ffffbf;
+}
+
+.progress-bar.bg-strong {
+    background-color: #a6d96a;
+}
+
+.progress-bar.bg-strongest {
+    background-color: #1a9641;
+}
