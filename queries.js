@@ -1,5 +1,6 @@
 const Pool = require('pg').Pool;
 const Crypto = require('crypto');
+const bcrypt = require('bcryptjs');
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
@@ -85,19 +86,16 @@ const getUserById = (req, res) => {
 
 const postNewUser = (req, res) => {
     const email = req.body.email;
-    const salt = Crypto.randomBytes(16).toString();
 
-    const hash = Crypto.createHash('sha256')
-    hash.update(req.body.password +  salt)
-    const password = hash.digest('ascii');
+    const password = bcrypt.hashSync(req.body.password, 8);
     const address = req.body.address;
     var usertype = 'user';
     if (req.body.usertype) {
         usertype = req.body.usertype;
     }
 
-    pool.query('INSERT INTO site_user (email, salt, password, address, usertype) VALUES ($1, $2, $3, $4, $5)',
-    [email, salt, password, address, usertype],
+    pool.query('INSERT INTO site_user (email, password, address, usertype) VALUES ($1, $2, $3, $4)',
+    [email, password, address, usertype],
     (error, result) => {
         if (error) {
             throw error;
@@ -165,6 +163,17 @@ const postNewCategory = (req, res) => {
     })
 }
 
+function postLogin(req, res) {
+  const {email, password} = req.body;
+  pool.query('SELECT * FROM site_user WHERE email = $1;', [email])
+    .then( ({rows}) => 
+      {
+        const auth = bcrypt.compareSync(req.body.password, rows[0].password);
+        res.send(auth);
+      });
+
+}
+
 
 module.exports = {
     getAllBooks,
@@ -178,5 +187,6 @@ module.exports = {
     postNewBook,
     postNewEmailReset,
     postNewAuthor,
-    postNewCategory
+    postNewCategory,
+    postLogin
 }

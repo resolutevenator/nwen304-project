@@ -41,6 +41,8 @@ app.post('/authors/new', db.postNewAuthor);
 
 app.post('/categories/new', db.postNewCategory);
 
+app.post('/login', db.postLogin);
+
 app.listen(port, function () {
     console.log(`Example app listening on port ${port}!`);
 });
