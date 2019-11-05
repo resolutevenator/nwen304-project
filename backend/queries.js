@@ -187,14 +187,14 @@ const postNewEmailReset = (req, res) => {
                     to: `${emailLC}`,
                     subject: 'NWEN304 Bookstore: Link to Reset Password',
                     text:
-                        `You are receiving theis because you (or someone else) has requested the reset of the password for your account with NWEN304 Bookstore. \n\n` + 
-                        `Please click on the following link, or paste it into your browser, to complete the process. This link will expire within one hour. \n\n` + 
-                        `insert link ${code}` + 
+                        `You are receiving theis because you (or someone else) has requested the reset of the password for your account with NWEN304 Bookstore. \n\n` +
+                        `Please click on the following link, or paste it into your browser, to complete the process. This link will expire within one hour. \n\n` +
+                        `insert link ${code}` +
                         `If you did not request this, please ignore this email and your password will remain unchanged. \n`
                 }
 
-                transporter.sendMail(mailOptions, function(err, response) {
-                    if(err) {
+                transporter.sendMail(mailOptions, function (err, response) {
+                    if (err) {
                         console.error(err);
                     } else {
                         console.log(response);
@@ -237,6 +237,55 @@ const postNewCategory = (req, res) => {
         })
 }
 
+const postNewOrder = (req, res) => {
+    // important, make sure that productid is an array, even if its just one item
+    const { userToken, productid, cost } = req.body;
+    var address = req.body.address;
+    const status = 'processing';
+    const time = new Date();
+
+    // TODO: get user
+    const email = null;
+
+    // get the user's information
+    pool.query('SELECT userid, address, FROM site_user WHERE email = $1',
+        [email],
+        (error, result) => {
+            if(error) {
+                console.log(error);
+            }
+            if (result.rows[0]) {
+                const userid = result.rows[0].userid;
+                if (!address) {
+                    // address should be null if the user selected to ship to a saved address
+                    // this could be removed, and have the front end get, then send, the saved address
+                    address = result.rows[0].address;
+                }
+
+                pool.query('INSERT INTO purchase VALUES ($1, $2, $3, $4, $5, $6)',
+                    [userid, productid, time, address, cost, status],
+                    (error, result) => {
+                        if(error) {
+                            //todo: decide how to handle error
+                            //do we need a check that each item exists?
+                            //do we need a check that each item has stock?
+                        }
+
+                        productid.foreach(product => {
+                            pool.query('UPDATE book SET stock = stock - 1 WHERE bookid = $1',
+                            [product]);
+                        })
+
+                        res.status(201).send('Purchased :)');
+                        return;
+                    })
+            } else {
+                console.log("no user");
+            }
+        })
+        res.status(500).send('error');
+}
+
 function postLogin(req, res) {
     const { email, password } = req.body;
     pool.query('SELECT * FROM site_user WHERE email = $1;', [email])
@@ -251,25 +300,25 @@ const updatePassword = (req, res) => {
     const { code, newPassword } = req.body;
 
     pool.query('SELECT * FROM email_reset WHERE code = $1',
-    [code],
-    (error, result) => {
-        if(error) {
-            throw error;
-        }
+        [code],
+        (error, result) => {
+            if (error) {
+                throw error;
+            }
 
-        if(result.rows[0]) {
-            const userid = result.rows[0].userid;
-            const password = bcrypt.hashSync(newPassword, 8);
+            if (result.rows[0]) {
+                const userid = result.rows[0].userid;
+                const password = bcrypt.hashSync(newPassword, 8);
 
-            pool.query('UPDATE site_user SET password = $1 WHERE userid = $2',
-            [password, userid]);
+                pool.query('UPDATE site_user SET password = $1 WHERE userid = $2',
+                    [password, userid]);
 
-            pool.query('DELETE FROM email_reset WHERE code = $1',
-            [code]);
+                pool.query('DELETE FROM email_reset WHERE code = $1',
+                    [code]);
 
-            res.status(201).send('Password Updated Successfully');
-        }
-    })
+                res.status(201).send('Password Updated Successfully');
+            }
+        })
 }
 
 module.exports = {
@@ -286,6 +335,7 @@ module.exports = {
     postNewEmailReset,
     postNewAuthor,
     postNewCategory,
+    postNewOrder,
     postLogin,
     updatePassword
 }
