@@ -33,13 +33,15 @@ const transporter = nodemailer.createTransport({
 });
 
 const getAllBooks = (req, res) => {
-    pool.query('SELECT bookid, title, author.name as author, description, category.name AS category, stock FROM book INNER JOIN author ON authorid=author INNER JOIN Category ON category=categoryid', (error, result) => {
-        if (error) {
-            throw error;
-        }
+    pool.query('SELECT bookid, title, author.name as author, description, category.name AS category, stock FROM book INNER JOIN author ON authorid=author INNER JOIN Category ON category=categoryid',
+        (error, result) => {
+            if (error) {
+                console.error(error);
+                return res.status(500).send(error);
+            }
 
-        res.status(200).json(result.rows);
-    })
+            return res.status(200).json(result.rows);
+        })
 }
 
 const getBookById = (req, res) => {
@@ -47,10 +49,15 @@ const getBookById = (req, res) => {
 
     pool.query('SELECT * FROM book WHERE bookid = $1', [bookid], (error, result) => {
         if (error) {
-            throw error;
+            console.error(error);
+            return res.status(500).send(error);
         }
 
-        res.status(200).json(result.rows);
+        if (result.rows[0]) {
+            return res.status(200).json(result.rows);
+        } else {
+            return res.status(404).send('Book with that ID not found');
+        }
     })
 }
 
@@ -59,10 +66,11 @@ const getBooksByAuthor = (req, res) => {
 
     pool.query('SELECT * FROM book WHERE author = $1', [authorid], (error, result) => {
         if (error) {
-            throw error;
+            console.error(error);
+            return res.status(500).send(error);
         }
 
-        res.status(200).json(result.rows);
+        return res.status(200).json(result.rows);
     })
 }
 
@@ -71,17 +79,18 @@ const getBooksByCategory = (req, res) => {
 
     pool.query('SELECT * FROM book WHERE category = $1', [categoryid], (error, result) => {
         if (error) {
-            throw error;
+            console.error(error);
+            return res.status(500).send(error);
         }
 
-        res.status(200).json(result.rows);
+        return res.status(200).json(result.rows);
     })
 }
 
 const searchBooks = (req, res) => {
     pool.query('SELECT bookid, title, description, author.name as authorname, category.name as categoryname FROM book INNER JOIN author ON book.author = author.authorid INNER JOIN category ON book.category = category.categoryid', (error, result) => {
         if (error) {
-            throw error;
+            return res.status(500).send(error);
         }
 
         const query = req.params.query;
@@ -89,27 +98,29 @@ const searchBooks = (req, res) => {
         const fuse = new Fuse(result.rows, searchOptions);
         const searchResults = fuse.search(query);
 
-        res.status(200).json(searchResults);
+        return res.status(200).json(searchResults);
     })
 }
 
 const getAuthors = (req, res) => {
     pool.query('SELECT * FROM author ORDER BY authorid ASC', (error, result) => {
         if (error) {
-            throw error;
+            console.error(error);
+            return res.status(500).send(error);
         }
 
-        res.status(200).json(result.rows);
+        return res.status(200).json(result.rows);
     })
 }
 
 const getCategories = (req, res) => {
     pool.query('SELECT * FROM category ORDER BY categoryid ASC', (error, result) => {
         if (error) {
-            throw error;
+            console.error(error);
+            return res.status(500).send(error);
         }
 
-        res.status(200).json(result.rows);
+        return res.status(200).json(result.rows);
     })
 }
 
@@ -118,15 +129,19 @@ const getUserById = (req, res) => {
 
     pool.query('SELECT * FROM site_user WHERE userid = $1', [userid], (error, result) => {
         if (error) {
-            throw error;
+            console.error(error);
+            return res.status(500).send(error);
         }
-
-        res.status(200).json(result.rows);
+        if (result.rows[0]) {
+            return res.status(200).json(result.rows);
+        } else {
+            return res.status(404).send("User not found");
+        }
     })
 }
 
 const postNewUser = (req, res) => {
-    const email = req.body.email;
+    const email = req.body.email.toLowerCase();
 
     const password = bcrypt.hashSync(req.body.password, 8);
     const address = req.body.address;
@@ -139,9 +154,10 @@ const postNewUser = (req, res) => {
         [email, password, address, usertype],
         (error, result) => {
             if (error) {
-                throw error;
+                console.error(error);
+                return res.status(500).send(error);
             }
-            res.status(201).send(`User added`);
+            return res.status(201).send(`User added`);
         })
 
 }
@@ -153,10 +169,11 @@ const postNewBook = (req, res) => {
         [title, description, stock, author, category],
         (error, result) => {
             if (error) {
-                throw error;
+                console.error(error);
+                return res.status(500).send(error);
             }
 
-            res.status(201).send(`Book added`);
+            return res.status(201).send(`Book added`);
         })
 }
 
@@ -178,7 +195,8 @@ const postNewEmailReset = (req, res) => {
                     [user.userid, timeRequested, code],
                     (error) => {
                         if (error) {
-                            throw error;
+                            console.error(error);
+                            return res.status(500).send(error);
                         }
                     })
 
@@ -196,16 +214,18 @@ const postNewEmailReset = (req, res) => {
                 transporter.sendMail(mailOptions, function (err, response) {
                     if (err) {
                         console.error(err);
+                        return res.status(500).send(err);
                     } else {
                         console.log(response);
+                        return res.status(201).send('Accepted and sent email');
                     }
                 })
             } else {
-                console.log("email not in database");
+                return res.status(404).send("User with that email not found in the database");
             }
+            // return res.status(202).send('Accepted');
         }
         );
-    res.status(200).send('okay');
 
 }
 
@@ -216,10 +236,11 @@ const postNewAuthor = (req, res) => {
         [name],
         (error, result) => {
             if (error) {
-                throw error;
+                console.error(error);
+                return res.status(500).send(error);
             }
 
-            res.status(201).send('Author added');
+            return res.status(201).send('Author added');
         })
 }
 
@@ -230,10 +251,11 @@ const postNewCategory = (req, res) => {
         [name],
         (error, result) => {
             if (error) {
-                throw error;
+                console.error(error);
+                return res.status(500).send(error);
             }
 
-            res.status(201).send('Category added');
+            return res.status(201).send('Category added');
         })
 }
 
@@ -251,8 +273,9 @@ const postNewOrder = (req, res) => {
     pool.query('SELECT userid, address, FROM site_user WHERE email = $1',
         [email],
         (error, result) => {
-            if(error) {
-                console.log(error);
+            if (error) {
+                console.error(error);
+                return res.status(500).send(error);
             }
             if (result.rows[0]) {
                 const userid = result.rows[0].userid;
@@ -265,7 +288,9 @@ const postNewOrder = (req, res) => {
                 pool.query('INSERT INTO purchase VALUES ($1, $2, $3, $4, $5, $6)',
                     [userid, productid, time, address, cost, status],
                     (error, result) => {
-                        if(error) {
+                        if (error) {
+                            console.error(error);
+                            return res.status(500).send(error);
                             //todo: decide how to handle error
                             //do we need a check that each item exists?
                             //do we need a check that each item has stock?
@@ -273,17 +298,15 @@ const postNewOrder = (req, res) => {
 
                         productid.foreach(product => {
                             pool.query('UPDATE book SET stock = stock - 1 WHERE bookid = $1',
-                            [product]);
+                                [product]);
                         })
 
-                        res.status(201).send('Purchased :)');
-                        return;
+                        return res.status(201).send('Purchased :)');
                     })
             } else {
-                console.log("no user");
+                return res.status(404).send("User with that email not found in the database");
             }
         })
-        res.status(500).send('error');
 }
 
 function postLogin(req, res) {
@@ -291,7 +314,7 @@ function postLogin(req, res) {
     pool.query('SELECT * FROM site_user WHERE email = $1;', [email])
         .then(({ rows }) => {
             const auth = bcrypt.compareSync(req.body.password, rows[0].password);
-            res.send(auth);
+            return res.status(200).send(auth);
         });
 
 }
@@ -303,7 +326,8 @@ const updatePassword = (req, res) => {
         [code],
         (error, result) => {
             if (error) {
-                throw error;
+                console.error(error);
+                return res.status(500).send(error);
             }
 
             if (result.rows[0]) {
@@ -311,12 +335,13 @@ const updatePassword = (req, res) => {
                 const password = bcrypt.hashSync(newPassword, 8);
 
                 pool.query('UPDATE site_user SET password = $1 WHERE userid = $2',
-                    [password, userid]);
+                    [password, userid]).then(() => {
+                        return res.status(201).send('Password Updated Successfully');
+                    });
 
                 pool.query('DELETE FROM email_reset WHERE code = $1',
                     [code]);
 
-                res.status(201).send('Password Updated Successfully');
             }
         })
 }
