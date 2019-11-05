@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import ItemView from '../../components/item_list';
+import {ROOT_URL} from '../../redux/actions/remote';
 
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
@@ -19,10 +20,12 @@ class SearchPage extends Component {
 
   changeSearchParam = ({target}) => this.setState({search_param: target.value});
 
-  search = () => console.log(this.state.search_param);
+  search = () => doSearch(this.state.search_param)
+    .then(result_id => this.setState({result_id}));
 
   render() {
     let {search_param, loading, result_id} = this.state;
+    console.log(result_id);
     return <Container>
         <h1> Search </h1>
         <InputGroup>
@@ -51,5 +54,9 @@ class SearchPage extends Component {
 function Spinner() {
   return <SpinnerRB animation='border' variant='info' style={{width: '10rm', height: '10rm'}} />
 }
+
+const doSearch = str => fetch(`${ROOT_URL}/books/search/${str}`)
+                        .then(x => x.json())
+                        .then(x => x.map(y => y.bookid))
 
 export default SearchPage;

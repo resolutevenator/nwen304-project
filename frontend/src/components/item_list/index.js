@@ -15,6 +15,7 @@ import Col from 'react-bootstrap/Col';
 
 function ItemList(props) {
   let {items, itemDef} = props;
+
   items = items.map(x => itemDef[x]);
 
   const rows = chunk(items, 3);

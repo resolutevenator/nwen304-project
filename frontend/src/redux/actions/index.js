@@ -6,6 +6,13 @@ export const GET_USER_DATA = 'AUTH:PROFILE_DATA';
 export {getAllItems} from './remote';
 
 
+export const modifyItem = (id, quantity) => {
+  return {
+    type: MODIFY_ITEM_CART,
+    id,
+    quantity
+  }
+};
 
 export const addItem = (id, quantity) => {
   return {

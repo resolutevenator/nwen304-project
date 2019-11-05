@@ -20,14 +20,12 @@ class CartPage extends Component {
 
 const {Body, Title} = Card;
 function CartItem(props) {
-  return <Card>
+  return <Card key={props}>
     <Body>
-      <Title>{props.name}</Title>
+      <Title>{props.title}</Title>
     </Body>
   </Card>;
 }
 
 
-    export default connect(({cart, items}) => {
-      return {...cart, itemDef: items};
-    })(CartPage);
+export default connect(({cart, items}) => ({...cart, itemDef: items}))(CartPage);

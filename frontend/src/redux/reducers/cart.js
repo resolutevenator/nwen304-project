@@ -2,7 +2,6 @@ import {ADD_ITEM_CART, REMOVE_ITEM_CART, MODIFY_ITEM_CART} from '../actions';
 
 const initialState = {
   items: {
-    a: 1,
   }
 }
 function reduceCart(state = initialState, action) {

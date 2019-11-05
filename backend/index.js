@@ -35,10 +35,6 @@ passport.use(new GoogleStrategy({
   }
 ));
 
-app.get('/', (req, res) => {
-    res.json({info: 'Node.js, Express, Postgres'})
-});
-
 app.get('/books', db.getAllBooks);
 
 app.get('/books/:bookid', db.getBookById);

@@ -176,7 +176,7 @@ const postNewEmailReset = (req, res) => {
 
                 pool.query('INSERT INTO email_reset VALUES ($1, $2, $3)',
                     [user.userid, timeRequested, code],
-                    (error, result) => {
+                    (error) => {
                         if (error) {
                             throw error;
                         }
