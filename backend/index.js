@@ -61,6 +61,8 @@ app.post('/authors/new', db.postNewAuthor);
 
 app.post('/categories/new', db.postNewCategory);
 
+app.post('/neworder', db.postNewOrder);
+
 app.post('/login', db.postLogin);
 
 app.put('/user/updatepassword', db.updatePassword);
