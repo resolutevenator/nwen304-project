@@ -140,6 +140,22 @@ const getUserById = (req, res) => {
     })
 }
 
+const getPurchaseHistory = (req, res) => {
+    const userid = req.body.userid;
+
+    pool.query('SELECT * FROM purchase WHERE userid = $1', [userid], (error, result) => {
+        if (error) {
+            console.error(error);
+            return res.status(500).send(error);
+        }
+        if (result.rows) {
+            return res.status(200).json(result.rows);
+        } else {
+            return res.status(404).send("Purchases for this user not found");
+        }
+    })
+}
+
 const postNewUser = (req, res) => {
     const email = req.body.email.toLowerCase();
 
