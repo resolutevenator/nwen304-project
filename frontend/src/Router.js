@@ -11,6 +11,8 @@ import CategoryPage from './pages/category';
 import CategoriesPage from './pages/categories';
 import SearchPage from './pages/search';
 
+import OAuthLoginFlow from './pages/oauthlogin';
+
 import LoginForm from './pages/login';
 import ResetForm from './pages/reset';
 import ResetSubmitForm from './pages/resetSubmit';
@@ -28,7 +30,8 @@ export default function router() {
       <Route path='/category/:id' component={CategoryPage} />
       <Route path='/cart' component={CartPage} />
       <Route path='/search' component={SearchPage} />
-      <Route path='/login' component={LoginForm} />
+      <Route path='/login' exact component={LoginForm} />
+      <Route path='/login/:code' exact component={OAuthLoginFlow} />
       <Route path='/register' component={RegisterForm} />
       <Route path='/reset' exact component={ResetForm} />
       <Route path='/reset/:email/:code' component={ResetSubmitForm} />

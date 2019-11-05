@@ -9,4 +9,7 @@ const getCost = async products => {
   return products.length * 2.5;
 }
 
-module.exports = {pool, getCost};
+const makeAccount = (email, passwordHash, address) => pool.query('INSERT INTO site_user (email, password, address, usertype) VALUES ($1, $2, $3, \'user\')',
+    [email, passwordHash, address]);
+
+module.exports = {pool, getCost, makeAccount};

@@ -2,12 +2,19 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {Redirect} from 'react-router-dom';
 
+import Container from 'react-bootstrap/Container';
+import Form from 'react-bootstrap/Form';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+
+const {Control, Group, Label} = Form;
 function profilePage(props) {
-  if (false)
+  if (!props.authtoken)
     return <Redirect to={'/login'} />;
-  return (<div>
+  return (<Container>
     Hello {JSON.stringify(props)}
-  </div>);
+  </Container>);
 }
 
-export default connect()(profilePage);
+const mapStateToProps = ({user}) => user;
+export default connect(mapStateToProps)(profilePage);

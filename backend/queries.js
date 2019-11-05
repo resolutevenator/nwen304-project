@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const Fuse = require('fuse.js');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
-const {pool, getCost} = db;
+const {pool, getCost, makeAccount} = db;
 
 let _ = require('lodash');
 
@@ -159,24 +159,19 @@ const getPurchaseHistory = (req, res) => {
 }
 
 const postNewUser = (req, res) => {
+
+    //TODO: Add errors for malformed input
     const email = req.body.email.toLowerCase();
 
     const password = bcrypt.hashSync(req.body.password, 8);
     const address = req.body.address;
-    var usertype = 'user';
-    if (req.body.usertype) {
-        usertype = req.body.usertype;
-    }
 
-    pool.query('INSERT INTO site_user (email, password, address, usertype) VALUES ($1, $2, $3, $4)',
-        [email, password, address, usertype],
-        (error, result) => {
-            if (error) {
-                console.error(error);
-                return res.status(500).send(error);
-            }
-            return res.status(201).send(`User added`);
-        })
+    makeAccount(email, password, address)
+    .then(_ => res.status(201).send(`User added`),
+      err => {
+        console.error(err);
+        res.status(500).send(err);
+      })
 
 }
 
@@ -406,7 +401,24 @@ const postUserOrder = async (req, res) => {
   res.send({purchases});
 };
 
+const redirectUrl = '//localhost:3000/login'
+/**
+ * Login using OAuth
+ *
+ * Create account if not exist
+ **/
+const oAuthLogin = async (req, res) => {
+  const email = req.user;
+  if (!auth.hasAccount(email)) {
+    await makeAccount(email, null, null);
+  }
+  const token = auth.createAuth(email);
+  res.redirect(`${redirectUrl}/${token}`)
+
+};
+
 module.exports = {
+    oAuthLogin,
     postUserOrder,
     postUserInfo,
     getAllBooks,

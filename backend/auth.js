@@ -32,6 +32,12 @@ const createAuth = email => {
   return token;
 }
 
+const hasAccount = async email => {
+  let v= await pool.query('SELECT * FROM site_user WHERE email = $1', [email]);
+    console.log(v.rows.length, v.rows);
+  return v.rows.length > 0;
+};
+
 const checkAuth = async token => {
   const resp = authorizations[token];
   //no such token
@@ -57,4 +63,4 @@ const isAdmin = async email => {
 }
 
 
-module.exports = {createAuth, checkAuth, emailToProfile, isAdmin};
+module.exports = {createAuth, checkAuth, emailToProfile, isAdmin, hasAccount};

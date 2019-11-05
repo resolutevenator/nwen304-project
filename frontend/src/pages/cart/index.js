@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import {modifyItem, removeItem} from '../../redux/actions';
+import {modifyItem, removeItem, purchase} from '../../redux/actions';
 
 import Container from 'react-bootstrap/Container';
 import Card from 'react-bootstrap/Card';
@@ -26,7 +26,7 @@ class CartPage extends Component {
       <br />
       <hr />
       <br />
-      <Button disabled={total === 0 || !user.authtoken}>
+      <Button disabled={total === 0 || !user.authtoken} onClick={() => this.props.purchase(this.props.user.authtoken, this.props.items)} >
         Purchase
       </Button>
     </Container>
@@ -59,5 +59,5 @@ function CartItem(props) {
 }
 
 
-const dispatchToProps = dispatch => bindActionCreators({removeItem, modifyItem}, dispatch);
+const dispatchToProps = dispatch => bindActionCreators({removeItem, modifyItem, purchase}, dispatch);
 export default connect(({user, cart, items}) => ({...cart, user, itemDef: items}), dispatchToProps)(CartPage);

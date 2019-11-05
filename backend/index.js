@@ -85,10 +85,7 @@ app.get('/auth/google',
 app.get('/auth/google/callback', 
   passport.authenticate('google', { failureRedirect: '/login',
   session: false}),
-  function(req, res) {
-    console.log(req.user);
-    res.redirect('/');
-  });
+  db.oAuthLogin);
 
 app.use(express.static('../frontend/build'));
 
