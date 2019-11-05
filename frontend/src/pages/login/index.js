@@ -1,6 +1,8 @@
-import React from 'react';
+import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {Link} from 'react-router-dom';
+import {Link, Redirect} from 'react-router-dom';
+import {bindActionCreators} from 'redux';
+import {login} from '../../redux/actions/remote';
 
 import Container from 'react-bootstrap/Container';
 
@@ -12,47 +14,58 @@ import Button from 'react-bootstrap/Button';
 
 import {GoogleLoginButton} from 'react-social-login-buttons';
 
-function loginPage(props) {
-  console.log(props.user);
-  if (props.user.authtoken) 
-    return '';
+class loginPage extends Component {
+  state = { 
+    email: '',
+    password: ''
+  }
+  update = field => ({target}) => this.setState({[field]: target.value});
 
-  return <Container>
-    <Row>
-      <Col>
-        <Card>
-          <Card.Body>
-            <h3>Sign In</h3>
+  render() {
+    const {user, login} = this.props;
+    const {email, password} = this.state;
+    if (user.authtoken) 
+      return <Redirect to={'/profile'} />;
 
-            <GoogleLoginButton onClick={console.log}/>
+    return <Container>
+      <Row>
+        <Col>
+          <Card>
+            <Card.Body>
+              <h3>Sign In</h3>
 
-            <Form>
-              <Form.Group>
-                <Form.Label>Email:</Form.Label>
-                <Form.Control type='email' placeholder='example@example.com' />
-              </Form.Group>
-              <Form.Group>
-                <Form.Label>Password:</Form.Label>
-                <Form.Control type='password' placeholder='password' />
-              </Form.Group>
-              <Button type='submit' variant='primary'>Login</Button>
-            </Form>
-          </Card.Body>
-        </Card>
-      </Col>
-      <Col>
-        <Card>
-          <Card.Body>
-            <Link to='/register'>
-              <Button>
-                Register
-              </Button>
-            </Link>
-          </Card.Body>
-        </Card>
-      </Col>
-    </Row>
-  </Container>
+              <GoogleLoginButton onClick={console.log}/>
+
+              <Form>
+                <Form.Group>
+                  <Form.Label>Email:</Form.Label>
+                  <Form.Control type='email' placeholder='example@example.com' value={email} onChange={this.update('email')}/>
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label>Password:</Form.Label>
+                  <Form.Control type='password' placeholder='password' value={password} onChange={this.update('password')}/>
+                </Form.Group>
+                <Button variant='primary'
+                  onClick={()=>login(email, password)}>Login</Button>
+              </Form>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col>
+          <Card>
+            <Card.Body>
+              <Link to='/register'>
+                <Button>
+                  Register
+                </Button>
+              </Link>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
+  }
 }
 
-    export default connect(({user}) => ({user}))(loginPage);
+const dispatchToProps = dispatch => bindActionCreators({login}, dispatch);
+export default connect(({user}) => ({user}), dispatchToProps)(loginPage);

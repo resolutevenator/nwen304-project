@@ -341,7 +341,7 @@ function postLogin(req, res) {
           token => {
             if (!token)
               return;
-            return res.send(token)
+            return res.send({token})
           }
         );
 

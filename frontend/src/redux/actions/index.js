@@ -3,8 +3,15 @@ export const ADD_ITEM_CART = 'CART:ADD_ITEM';
 export const REMOVE_ITEM_CART = 'CART:RM_ITEM';
 export const MODIFY_ITEM_CART = 'CART:CHNG_ITEM';
 export const GET_USER_DATA = 'AUTH:PROFILE_DATA';
-export {getAllItems} from './remote';
+export const LOGIN = 'AUTH:LOGIN';
+export const LOGOUT = 'AUTH:LOGOUT';
 
+export {getAllItems, login} from './remote';
+
+
+export const logout = () => ({
+  type: LOGOUT
+});
 
 export const modifyItem = (id, quantity) => {
   return {

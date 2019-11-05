@@ -1,5 +1,5 @@
+import {LOGIN, LOGOUT} from '../actions';
 const initialState = {
-
   authtoken: false,
   profile: false,
 };
@@ -7,8 +7,16 @@ const initialState = {
 function reduceUserInfo(state = initialState, action) {
   state = {...state};
   switch(action.type) {
-    default:
-      return state;
+  case LOGIN:
+    console.log(action);
+    return {
+      authtoken: action.token,
+      profile: action.profile
+    };
+  case LOGOUT:
+    return initialState;
+  default:
+    return state;
   }
 }
 

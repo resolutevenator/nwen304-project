@@ -1,5 +1,15 @@
-import {REFRESH_ITEMS, GET_USER_DATA} from '.';
+import {REFRESH_ITEMS, LOGIN} from '.';
 export const ROOT_URL = '//localhost:5000'
+
+
+const sendData = (url, method, data) => fetch(url, {
+  method,
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  redirect: 'follow',
+  body: JSON.stringify(data)
+}).then(x => x.json());
 
 export const getAllItems = () => dispatch => 
   fetch(`${ROOT_URL}/books`)
@@ -18,14 +28,12 @@ export const getAllItems = () => dispatch =>
       });
     });
 
-export const getUserData = id => dispatch => 
-  fetch(`${ROOT_URL}/user/${id}`)
-    .then(x => x.json())
-    .then(x => dispatch({
-      type: GET_USER_DATA,
-      ...x
-    }))
-    .catch(console.error);
+export const login = (email, password) => dispatch => sendData(`${ROOT_URL}/login`, 'POST', {email, password})
+  .then(async ({token}) => {
+    let profile = await sendData(`${ROOT_URL}/user/info`, 'POST', {token});
+    return {token, profile};
+  })
+  .then(d => dispatch({type:LOGIN, ...d}));
 
 export const createUser = (email, password, address) => 
-  fetch(`${ROOT_URL}/user/newuser`)
+  sendData(`${ROOT_URL}/user/newuser`, 'POST', {email, password, address});

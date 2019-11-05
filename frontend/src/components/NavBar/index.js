@@ -1,5 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import {logout} from '../../redux/actions';
 
 import {Link, withRouter} from 'react-router-dom';
 
@@ -14,23 +16,28 @@ const {Brand} = NavBar;
 const {Item} = Nav;
 
 function nav(props) {
-  let numberOfItems = Object.values(props.items).reduce((a,b) => a+b, 0);
-  numberOfItems = numberOfItems >= 10 ? '9+' : numberOfItems;
+  let {items, logout, usertype} = props;
+  items = items >= 10 ? '9+' : items;
   return <NavBar bg='dark' variant='dark'>
     <Link to='/'><Brand>Shit Book Shop</Brand></Link>
     <Nav className='mr-auto'>
-        {NavLink('Home', '/')}
-        {props.user.authtoken ? NavLink('Profile', '/profile') : NavLink('Login', '/login')}
-        {NavLink('Catalog', '/catalog')}
+      {NavLink('Home', '/')}
+      {usertype !== null ? NavLink('Profile', '/profile') : NavLink('Login', '/login')}
+      {NavLink('Catalog', '/catalog')}
     </Nav>
     <Nav>
+      {usertype !== null ? <Item>
+        <Nav.Link onClick={logout}>
+          Logout
+        </Nav.Link>
+      </Item>:''}
       <Link to='/search'>
         {NavLink('Search', '/search')}
       </Link>
       <Link to='/cart'>
         <Button variant='primary'>
           <ShoppingCart /> <Badge variant='light'>
-            {numberOfItems}
+            {items}
           </Badge>
         </Button>
       </Link>
@@ -46,4 +53,12 @@ function NavLink(text, url) {
   </Item>;
 }
 
-export default connect(({cart, user}) => ({...cart, user}))(withRouter(nav));
+const dispatchToProps = dispatch => bindActionCreators({logout}, dispatch);
+const mapStateToProps = ({cart, user}) => {
+  const items = Object.values(cart.items).reduce((a,b) => a+b, 0)
+  let usertype = null;
+  if (user.profile)
+    usertype = user.profile.usertype
+  return {items, usertype};
+};
+export default connect(mapStateToProps, dispatchToProps)(withRouter(nav));

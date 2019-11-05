@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import Error from '../../components/error';
-import {addItem} from '../../redux/actions';
+import {addItem, modifyItem, removeItem} from '../../redux/actions';
 
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
@@ -12,28 +12,41 @@ import Row from 'react-bootstrap/Row';
 class ItemPage extends Component {
   constructor(props) {
     super(props);
-    const count = props.cart.items[props.match.params.id] || 1;
-    this.state = {
-      count
-    }
+    this.state = {count: props.quantity};
   }
 
-  incrementCount = () => this.setState(({count}) => ({count: count+1}));
-  decrementCount = () => this.setState(({count}) => ({count: count-1}));
+  bindCount = c => Math.min(this.props.item.stock, Math.max(0, c));
 
+  incrementCount = () => this.setState(({count}) => ({count: this.bindCount(count+1)}));
+  decrementCount = () => this.setState(({count}) => ({count: this.bindCount(count-1)}));
 
+  changeCart = () => {
+    let {count} = this.state;
+    let {inCart, id} = this.props;
+    if (inCart && count === 0)
+      this.props.removeItem(id)
+    if (inCart)
+      this.props.modifyItem(id, count);
+    if (count > 0)
+      this.props.addItem(id, count);
+  }
 
   render() {
-    const {match, items, location} = this.props;
-    const {id} = match.params;
+    const {inCart, item, location} = this.props;
+    const {count} = this.state;
+    let buttonVariant = 'primary';
+    let buttonText = 'Add To Cart';
+    if (!inCart) {
+    } else if (count === 0) {
+      buttonVariant = 'warning';
+      buttonText = 'Remove from Cart';
+    } else {
+      buttonVariant = 'info';
+      buttonText = 'Update Cart';
+    }
 
-    const inCart = Object.keys(this.props.cart.items).includes(id);
-    const func = inCart ? this.props.modifyItem : this.props.addItem
-
-    if (!Object.values(items).some(b => b.bookid == id))
+    if (item === undefined)
       return (<Error location={location}/>);
-
-    const item = Object.values(items).filter(b => b.bookid == id)[0];
 
     return (<Container>
         <Row>
@@ -41,7 +54,7 @@ class ItemPage extends Component {
             {JSON.stringify(item)}
           </Col>
           <Col>
-        <Button onClick={() => func(id, this.state.count)}>Hello</Button>
+        <Button variant={buttonVariant} onClick={this.changeCart}>{buttonText}</Button>
           </Col>
         </Row>
 
@@ -61,5 +74,13 @@ class ItemPage extends Component {
   }
 }
 
-const dispatchToProps = dispatch => bindActionCreators({addItem}, dispatch);
-export default connect(({cart, items}) => ({cart, items}),dispatchToProps)(ItemPage);
+const dispatchToProps = dispatch => bindActionCreators({addItem, modifyItem, removeItem}, dispatch);
+
+const mapStateToProps = ({cart, items}, props) => {
+  const {id} = props.match.params;
+  const inCart = Object.keys(cart.items).includes(id);
+  const quantity = cart.items[id] || 1;
+  const item = items[id]
+  return {id, inCart, item, quantity};
+};
+export default connect(mapStateToProps,dispatchToProps)(ItemPage);
