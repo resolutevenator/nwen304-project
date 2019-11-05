@@ -12,6 +12,8 @@ import CategoriesPage from './pages/categories';
 import SearchPage from './pages/search';
 
 import LoginForm from './pages/login';
+import ResetForm from './pages/reset';
+import ResetSubmitForm from './pages/resetSubmit';
 import RegisterForm from './pages/register';
 
 export default function router() {
@@ -28,6 +30,8 @@ export default function router() {
       <Route path='/search' component={SearchPage} />
       <Route path='/login' component={LoginForm} />
       <Route path='/register' component={RegisterForm} />
+      <Route path='/reset' exact component={ResetForm} />
+      <Route path='/reset/:email/:code' component={ResetSubmitForm} />
       <Route path='/profile' component={ProfilePage} />
       <Route exact path='/'>
         <Homepage />

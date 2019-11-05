@@ -37,3 +37,5 @@ export const login = (email, password) => dispatch => sendData(`${ROOT_URL}/logi
 
 export const createUser = (email, password, address) => 
   sendData(`${ROOT_URL}/user/newuser`, 'POST', {email, password, address});
+
+export const passwordReset = email => sendData(`${ROOT_URL}/user/passwordreset`, 'POST', {email});

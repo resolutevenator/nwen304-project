@@ -48,6 +48,9 @@ class loginPage extends Component {
                 <Button variant='primary'
                   onClick={()=>login(email, password)}>Login</Button>
               </Form>
+              <Link to={'/reset'}>
+                Forgot your password?
+              </Link>
             </Card.Body>
           </Card>
         </Col>
