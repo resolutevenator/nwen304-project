@@ -4,6 +4,8 @@ const Fuse = require('fuse.js');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 
+const auth = require('./auth');
+
 const searchOptions = {
     shouldSort: true,
     findAllMatches: true,
@@ -329,9 +331,19 @@ function postLogin(req, res) {
     const { email, password } = req.body;
     pool.query('SELECT * FROM site_user WHERE email = $1;', [email])
         .then(({ rows }) => {
-            const auth = bcrypt.compareSync(req.body.password, rows[0].password);
-            return res.status(200).send(auth);
-        });
+            const ath = bcrypt.compareSync(req.body.password, rows[0].password);
+            if (!ath) {
+              res.status(400).send(false);
+            }
+            return auth.createAuth(email)
+        })
+        .then(
+          token => {
+            if (!token)
+              return;
+            return res.send(token)
+          }
+        );
 
 }
 
@@ -362,7 +374,19 @@ const updatePassword = (req, res) => {
         })
 }
 
+const postUserInfo = (req, res) => {
+  const {token} = req.body;
+  auth.checkAuth(token)
+    .then(profile => {
+      //fail = skip
+      if (profile === null)
+        res.send(false);
+      res.send(profile);
+    });
+};
+
 module.exports = {
+    postUserInfo,
     getAllBooks,
     getBookById,
     getBooksByAuthor,

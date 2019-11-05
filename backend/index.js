@@ -53,6 +53,8 @@ app.get('/user/:userid', db.getUserById);
 
 app.post('/user/newuser', db.postNewUser);
 
+app.post('/user/info', db.postUserInfo);
+
 app.post('/books/newbook', db.postNewBook);
 
 app.post('/user/passwordreset', db.postNewEmailReset);
