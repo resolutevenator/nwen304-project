@@ -55,5 +55,10 @@ const emailToProfile = email => {
     .then(x => x.rows[0])
 };
 
+const isAdmin = async email => {
+  const user = await emailToProfile(email);
+  return user.usertype === 'admin';
+}
 
-module.exports = {createAuth, checkAuth, emailToProfile};
+
+module.exports = {createAuth, checkAuth, emailToProfile, isAdmin};
