@@ -59,6 +59,8 @@ app.post('/books/newbook', db.postNewBook);
 
 app.post('/user/passwordreset', db.postNewEmailReset);
 
+app.post('/user/orders', db.postUserOrder);
+
 app.post('/authors/new', db.postNewAuthor);
 
 app.post('/categories/new', db.postNewCategory);

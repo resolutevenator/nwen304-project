@@ -1,8 +1,11 @@
-const Pool = require('pg').Pool;
+const db = require('./db');
 const bcrypt = require('bcryptjs');
 const Fuse = require('fuse.js');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+const {pool, getCost} = db;
+
+let _ = require('lodash');
 
 const auth = require('./auth');
 
@@ -22,9 +25,6 @@ const searchOptions = {
     ]
 };
 
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-});
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -277,54 +277,62 @@ const postNewCategory = (req, res) => {
         })
 }
 
-const postNewOrder = (req, res) => {
-    // important, make sure that productid is an array, even if its just one item
-    const { userToken, productid, cost } = req.body;
-    var address = req.body.address;
-    const status = 'processing';
-    const time = new Date();
+const postNewOrder = async (req, res) => {
+  // important, make sure that productid is an array, even if its just one item
+  const { token, purchases} = req.body;
+  const products = purchases;
+  const status = 'processing';
+  const time = Date.now();
 
-    // TODO: get user
-    const email = null;
+  const profile = await auth.checkAuth(token);
 
-    // get the user's information
-    pool.query('SELECT userid, address, FROM site_user WHERE email = $1',
-        [email],
-        (error, result) => {
-            if (error) {
-                console.error(error);
-                return res.status(500).send(error);
-            }
-            if (result.rows[0]) {
-                const userid = result.rows[0].userid;
-                if (!address) {
-                    // address should be null if the user selected to ship to a saved address
-                    // this could be removed, and have the front end get, then send, the saved address
-                    address = result.rows[0].address;
-                }
+  const {userid, address} = profile;
+  if (profile === null) {
+    res.status(403).send({error: 'No Such User'});
+  }
 
-                pool.query('INSERT INTO purchase VALUES ($1, $2, $3, $4, $5, $6)',
-                    [userid, productid, time, address, cost, status],
-                    (error, result) => {
-                        if (error) {
-                            console.error(error);
-                            return res.status(500).send(error);
-                            //todo: decide how to handle error
-                            //do we need a check that each item exists?
-                            //do we need a check that each item has stock?
-                        }
+  const cost = await getCost(products);
 
-                        productid.foreach(product => {
-                            pool.query('UPDATE book SET stock = stock - 1 WHERE bookid = $1',
-                                [product]);
-                        })
-
-                        return res.status(201).send('Purchased :)');
-                    })
-            } else {
-                return res.status(404).send("User with that email not found in the database");
-            }
+  //start psql transaction
+  pool.connect( async (_, client, done) => {
+    const shouldAbort = err => {
+      if (err) {
+        console.error('Error in transaction', err.stack)
+        client.query('ROLLBACK', err => {
+          if (err) {
+            console.error('Error rolling back client', err.stack)
+          }
+          // release the client back to the pool
+          done()
+          client = {query: () => null};
         })
+      }
+      return !!err
+    }
+
+    await client.query('BEGIN');
+    //stock changes
+    
+    for (let p of products) {
+        console.log(p);
+        client.query('UPDATE book SET stock = stock - 1 WHERE bookid = $1',
+          [p], err => shouldAbort(err));
+    }
+
+    client.query('INSERT INTO purchase (userid, productid, time, address, cost, current_status) VALUES ($1, $2, $3, $4, $5, $6)',
+      [userid, products, time, address, cost, status], (err) => {
+        if (shouldAbort(err)) {
+          return;
+        }
+        client.query('COMMIT', [], err => {
+          if(shouldAbort(err))
+            return;
+          res.send({status: true});
+          done();
+        });
+      });
+  });
+
 }
 
 function postLogin(req, res) {
@@ -385,7 +393,21 @@ const postUserInfo = (req, res) => {
     });
 };
 
+const postUserOrder = async (req, res) => {
+  const {token} = req.body;
+  const profile = await auth.checkAuth(token);
+  if (profile === null) {
+    res.status(403).send({error:'No Such User'});
+  }
+  let purchases = await pool.query('SELECT * FROM purchase WHERE userid = $1', [
+    profile.userid
+  ]);
+  purchases = purchases.rows;
+  res.send({purchases});
+};
+
 module.exports = {
+    postUserOrder,
     postUserInfo,
     getAllBooks,
     getBookById,

@@ -1,9 +1,5 @@
-const Pool = require('pg').Pool;
 const crypto = require('crypto');
-
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-});
+const pool = require('./db').pool;
 
 //1 hr
 const TIME_TO_EXPIRE = 360000;

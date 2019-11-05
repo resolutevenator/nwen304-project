@@ -42,7 +42,7 @@ CREATE TYPE status AS ENUM ('processing', 'shipping', 'delivered');
 CREATE TABLE purchase (
     userid int NOT NULL,
     productid int[] NOT NULL,
-    time date NOT NULL,
+    time BIGINT NOT NULL,
     address text,
     cost money NOT NULL,
     current_status status,
