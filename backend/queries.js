@@ -167,7 +167,7 @@ const postNewUser = (req, res) => {
     const address = req.body.address;
 
     makeAccount(email, password, address)
-    .then(_ => res.status(201).send(`User added`),
+    .then(_ => res.status(201).send({message:'User added'}),
       err => {
         console.error(err);
         res.status(500).send(err);

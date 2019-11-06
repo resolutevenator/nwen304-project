@@ -54,7 +54,11 @@ const checkAuth = async token => {
 
 const emailToProfile = email => {
     return pool.query('SELECT * FROM site_user WHERE email = $1', [email])
-    .then(x => x.rows[0])
+    .then(x => {
+      let profile = x.rows[0];
+      delete profile.password;
+      return profile;
+    })
 };
 
 const isAdmin = async email => {

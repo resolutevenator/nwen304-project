@@ -12,10 +12,8 @@ import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 
-import {GoogleLoginButton} from 'react-social-login-buttons';
-import {ROOT_URL} from '../../redux/actions/remote';
+import SocialLogin from '../../components/social-login';
 
-const GOOGLE_OAUTH_URL = `${ROOT_URL}/auth/google`;
 
 
 class loginPage extends Component {
@@ -38,7 +36,7 @@ class loginPage extends Component {
             <Card.Body>
               <h3>Sign In</h3>
 
-              <GoogleLoginButton onClick={() => window.location = GOOGLE_OAUTH_URL}/>
+              <SocialLogin />
 
               <Form>
                 <Form.Group>

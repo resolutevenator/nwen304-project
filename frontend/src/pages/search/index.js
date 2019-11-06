@@ -6,7 +6,7 @@ import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
-import SpinnerRB from 'react-bootstrap/Spinner';
+import Spinner from '../../components/spinner';
 
 import {FaSearch as SearchIcon} from "react-icons/fa";
 
@@ -50,10 +50,6 @@ class SearchPage extends Component {
     </Container>
   }
 };
-
-function Spinner() {
-  return <SpinnerRB animation='border' variant='info' style={{width: '10rm', height: '10rm'}} />
-}
 
 const doSearch = str => fetch(`${ROOT_URL}/books/search/${str}`)
                         .then(x => x.json())

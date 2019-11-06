@@ -4,7 +4,8 @@ import {bindActionCreators} from 'redux';
 import {getUser} from '../../redux/actions';
 import {Redirect} from 'react-router-dom';
 
-import SpinnerRB from 'react-bootstrap/Spinner';
+import Spinner from '../../components/spinner';
+
 
 class OauthHandler extends Component {
   componentDidMount() {
@@ -21,9 +22,6 @@ class OauthHandler extends Component {
   }
 }
 
-function Spinner() {
-  return <SpinnerRB animation='border' variant='info' style={{width: '10rm', height: '10rm'}} />
-}
 
 const mapStateToProps = ({user}) => user;
 const dispatchToProps = d => bindActionCreators({getUser}, d);

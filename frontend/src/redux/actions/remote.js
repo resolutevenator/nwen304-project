@@ -44,7 +44,6 @@ export const createUser = (email, password, address) =>
 
 export const passwordReset = email => sendData(`${ROOT_URL}/user/passwordreset`, 'POST', {email});
 
-
 export const purchase = (token, cart) => dispatch => {
   let purchaseList = Object.keys(cart).map(k => Array(cart[k]).fill(k));
   let purchases = [];
@@ -55,3 +54,7 @@ export const purchase = (token, cart) => dispatch => {
       type: 'PURCHASE COMPLETE'
     }));
 };
+
+
+
+export const registerUser = (email, password, address) => sendData(`${ROOT_URL}/user/newuser`, 'POST', {email, password, address});

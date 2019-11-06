@@ -6,7 +6,7 @@ export const GET_USER_DATA = 'AUTH:PROFILE_DATA';
 export const LOGIN = 'AUTH:LOGIN';
 export const LOGOUT = 'AUTH:LOGOUT';
 
-export {getAllItems, login, passwordReset, purchase, getUser} from './remote';
+export {getAllItems, login, passwordReset, purchase, getUser, registerUser} from './remote';
 
 
 export const logout = () => ({
