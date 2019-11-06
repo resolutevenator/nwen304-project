@@ -55,6 +55,6 @@ export const purchase = (token, cart) => dispatch => {
     }));
 };
 
-
-
 export const registerUser = (email, password, address) => sendData(`${ROOT_URL}/user/newuser`, 'POST', {email, password, address});
+
+export const getOrderHistory = (token) => sendData(`${ROOT_URL}/user/orders`, 'POST', {token});
