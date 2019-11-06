@@ -79,6 +79,8 @@ app.post('/login', db.postLogin);
 
 app.put('/user/updatepassword', db.updatePassword);
 
+app.get('/recommend', db.recommend);
+
 app.get('/auth/google',
   passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/plus.login',
     'https://www.googleapis.com/auth/userinfo.email'],

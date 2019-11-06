@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const Fuse = require('fuse.js');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+const fetch = require('node-fetch');
 const {pool, getCost, makeAccount} = db;
 
 let _ = require('lodash');
@@ -417,7 +418,30 @@ const oAuthLogin = async (req, res) => {
 
 };
 
+
+const recommend = async (req, res) => {
+  const {ip} = req;
+  const reg = await fetch(`https://ipapi.co/${ip}/json`)
+    .then(x => x.json())
+    .then(({city, region}) => `${city}, ${region}`)
+
+  const weather = await fetch(`https://wttr.in/${reg}?format=j1`)
+    .then(x => x.json())
+    .then(x => x.current_condition[0].weatherDesc[0].value)
+
+  let category = 'Comedy';
+  if (weather.includes('rain'))
+    category = 'Horror';
+
+  await pool.query('SELECT bookid, category.name AS category, stock '
+    + 'FROM book INNER JOIN author '
+    + 'ON authorid=author INNER JOIN Category ON category=categoryid '
+    + 'WHERE category.name = $1', [category])
+    .then(({rows}) => res.send(rows));
+};
+
 module.exports = {
+    recommend,
     oAuthLogin,
     postUserOrder,
     postUserInfo,
