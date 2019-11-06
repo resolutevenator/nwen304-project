@@ -3,18 +3,19 @@ import {connect} from 'react-redux';
 import {Redirect} from 'react-router-dom';
 
 import Container from 'react-bootstrap/Container';
-import Form from 'react-bootstrap/Form';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 
 import History from './history';
+import EditProfile from './edit_details';
 
-const {Control, Group, Label} = Form;
+
 function profilePage(props) {
   if (!props.authtoken)
     return <Redirect to={'/login'} />;
+
   return (<Container>
     Hello {JSON.stringify(props)}
+    <EditProfile email={props.profile.email} address={props.profile.address} />
+    <h1>Shipments</h1>
     <History token={props.authtoken}/>
   </Container>);
 }

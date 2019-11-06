@@ -31,6 +31,7 @@ class OrderHistory extends Component {
       <code>
         {order.address}
       </code>
+      <h4>Status: {order.current_status}</h4>
       <ListGroup>
         {p.map(x=> <Item key={x.bookid}>
           <Row>
