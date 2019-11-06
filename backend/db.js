@@ -12,4 +12,7 @@ const getCost = async products => {
 const makeAccount = (email, passwordHash, address) => pool.query('INSERT INTO site_user (email, password, address, usertype) VALUES ($1, $2, $3, \'user\')',
     [email, passwordHash, address]);
 
-module.exports = {pool, getCost, makeAccount};
+const getId = (email) => pool.query('SELECT userid FROM site_user WHERE email = $1', [email])
+  .then(({rows}) => rows[0].userid);
+
+module.exports = {pool, getCost, makeAccount, getId};

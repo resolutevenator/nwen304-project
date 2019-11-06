@@ -3,6 +3,10 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const bodyParser = require('body-parser');
 const db = require('./queries');
+
+
+const adminRouter = require('./admin');
+
 const app = express();
 var cors = require('cors')
 const port = process.env.PORT || 3000;
@@ -13,6 +17,10 @@ const GOOGLE_CLIENT_SECRET = 'iPq4dp03vX-CSJg110HnoqaP';
 app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(cors());
+
+app.use('/admin', adminRouter);
+
+
 app.use(
     bodyParser.urlencoded({
         extended: true,
