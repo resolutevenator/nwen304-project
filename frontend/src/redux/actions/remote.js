@@ -57,4 +57,17 @@ export const purchase = (token, cart) => dispatch => {
 
 export const registerUser = (email, password, address) => sendData(`${ROOT_URL}/user/newuser`, 'POST', {email, password, address});
 
+export const resetPw = (email, code, password) => sendData(`${ROOT_URL}/user/updatepassword`, 'PUT', {email, newPassword: password, code});
+
 export const getOrderHistory = (token) => sendData(`${ROOT_URL}/user/orders`, 'POST', {token});
+
+
+export const archive = (token, email) => sendData(`${ROOT_URL}/admin/archive`, 'POST', {token, email});
+
+export const removeOrder = (token, email, time) => sendData(`${ROOT_URL}/admin/delete`, 'POST', {token, email, time});
+
+export const modifyOrder = (token, email, time, current_status, productid, cost) => sendData(`${ROOT_URL}/admin/modify`, 'POST', {token, email, time, current_status, productid, cost});
+
+export const getAllEmails = token => sendData(`${ROOT_URL}/admin/allEmails`, 'POST', {token});
+
+export const getAllOrders = token => sendData(`${ROOT_URL}/admin/allOrders`, 'POST', {token});

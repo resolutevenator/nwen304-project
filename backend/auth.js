@@ -34,7 +34,6 @@ const createAuth = email => {
 
 const hasAccount = async email => {
   let v= await pool.query('SELECT * FROM site_user WHERE email = $1', [email]);
-    console.log(v.rows.length, v.rows);
   return v.rows.length > 0;
 };
 

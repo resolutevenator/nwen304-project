@@ -10,6 +10,7 @@ import ProfilePage from './pages/profile';
 import CategoryPage from './pages/category';
 import CategoriesPage from './pages/categories';
 import SearchPage from './pages/search';
+import AdminPage from './pages/admin';
 
 import OAuthLoginFlow from './pages/oauthlogin';
 
@@ -29,6 +30,7 @@ export default function router() {
       <Route path='/category' exact component={CategoriesPage} />
       <Route path='/category/:id' component={CategoryPage} />
       <Route path='/cart' component={CartPage} />
+      <Route path='/admin' component={AdminPage} />
       <Route path='/search' component={SearchPage} />
       <Route path='/login' exact component={LoginForm} />
       <Route path='/login/:code' exact component={OAuthLoginFlow} />
@@ -39,7 +41,7 @@ export default function router() {
       <Route exact path='/'>
         <Homepage />
       </Route>
-        {/* ERROR PAGE*/}
+      {/* ERROR PAGE*/}
       <Route component={ErrorPage} path='/' />
     </Switch>
   </Router>;

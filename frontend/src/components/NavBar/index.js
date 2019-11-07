@@ -25,6 +25,7 @@ function nav(props) {
       {usertype !== null ? NavLink('Profile', '/profile') : NavLink('Login', '/login')}
       {NavLink('Catalog', '/catalog')}
       {NavLink('Categories', '/category')}
+      {usertype === 'admin' ? NavLink('Admin Panel', '/admin') :''}
     </Nav>
     <Nav>
       {usertype !== null ? <Item>

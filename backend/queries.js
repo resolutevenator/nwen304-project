@@ -213,7 +213,7 @@ const postNewEmailReset = (req, res) => {
                             return res.status(500).send(error);
                         }
                     })
-
+                const baseUrl = 'http://localhost:3000/reset/'
                 const mailOptions = {
                     from: 'nwen304reset@gmail.com',
                     to: `${emailLC}`,
@@ -221,7 +221,7 @@ const postNewEmailReset = (req, res) => {
                     text:
                         `You are receiving theis because you (or someone else) has requested the reset of the password for your account with NWEN304 Bookstore. \n\n` +
                         `Please click on the following link, or paste it into your browser, to complete the process. This link will expire within one hour. \n\n` +
-                        `insert link ${code}` +
+                        `insert link ${baseUrl}${emailLC}/${code} ` +
                         `If you did not request this, please ignore this email and your password will remain unchanged. \n`
                 }
 
@@ -230,7 +230,6 @@ const postNewEmailReset = (req, res) => {
                         console.error(err);
                         return res.status(500).send(err);
                     } else {
-                        console.log(response);
                         return res.status(201).send('Accepted and sent email');
                     }
                 })
@@ -310,7 +309,6 @@ const postNewOrder = async (req, res) => {
     //stock changes
     
     for (let p of products) {
-        console.log(p);
         client.query('UPDATE book SET stock = stock - 1 WHERE bookid = $1',
           [p], err => shouldAbort(err));
     }
@@ -351,29 +349,29 @@ function postLogin(req, res) {
 
 }
 
-const updatePassword = (req, res) => {
-    const { code, newPassword } = req.body;
-
-    pool.query('SELECT * FROM email_reset WHERE code = $1',
-        [code],
+const updatePassword = async (req, res) => {
+    const { code, newPassword, email } = req.body;
+    
+    const limit = new Date(new Date() - 1);
+    const lookup = await db.getId(email);
+    pool.query('SELECT * FROM email_reset WHERE code = $1 AND userid = $2 '
+      + 'AND timeRequested < $3',
+        [code, lookup, limit],
         (error, result) => {
             if (error) {
                 console.error(error);
                 return res.status(500).send(error);
             }
-
             if (result.rows[0]) {
-                const userid = result.rows[0].userid;
                 const password = bcrypt.hashSync(newPassword, 8);
 
                 pool.query('UPDATE site_user SET password = $1 WHERE userid = $2',
-                    [password, userid]).then(() => {
+                    [password, lookup]).then(() => {
                         return res.status(201).send('Password Updated Successfully');
                     });
 
                 pool.query('DELETE FROM email_reset WHERE code = $1',
                     [code]);
-
             }
         })
 }
