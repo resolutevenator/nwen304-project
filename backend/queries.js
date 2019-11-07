@@ -349,6 +349,7 @@ function postLogin(req, res) {
 
 }
 
+
 const updatePassword = async (req, res) => {
     const { code, newPassword, email } = req.body;
     
@@ -400,7 +401,7 @@ const postUserOrder = async (req, res) => {
   res.send({purchases});
 };
 
-const redirectUrl = '//localhost:3000/login'
+const redirectUrl = '/login'
 /**
  * Login using OAuth
  *
@@ -438,7 +439,32 @@ const recommend = async (req, res) => {
     .then(({rows}) => res.send(rows));
 };
 
+
+const updateAccount = async (req, res) => {
+  const {token, password, address} = req.body;
+
+  const profile = await auth.checkAuth(token);
+  if (profile === null)
+    res.status(403).send({error: 'not logged in'});
+
+  if (password) {
+    const newPw = bcrypt.hashSync(password, 8);
+    console.log(newPw);
+    await pool.query('UPDATE site_user SET password = $1 WHERE email = $2',
+      [newPw, profile.email]);
+  }
+  
+  if (address) {
+    await pool.query('UPDATE site_user SET address = $1 WHERE email = $2',
+      [address, profile.email]);
+  }
+  res.send({status: 'OK'});
+}
+  
+
+
 module.exports = {
+    updateAccount,
     recommend,
     oAuthLogin,
     postUserOrder,

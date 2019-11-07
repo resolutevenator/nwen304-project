@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import PasswordStrength from '../register/password_strength';
 
+import {userUpdate} from '../../redux/actions/remote';
+
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 const {Control, Group, Label}  = Form;
@@ -14,6 +16,24 @@ class EditProfile extends Component {
   }
 
   change = k => ({target}) => this.setState({[k]: target.value});
+
+  onSubmit = () => {
+    const {password, password_confirm, address} = this.state;
+    let submission = {token: this.props.token};
+    if (password !== '') {
+      if (password !== password_confirm) {
+        alert('passwords not equal');
+        return;
+      }
+      submission.password = password;
+    }
+    if (address !== '') {
+      submission.address = address;
+    }
+    userUpdate(submission).then(()=>this.setState({password:'',password_confirm: ''}))
+    .then(() => alert('done!'));
+
+  }
 
   render() {
     const {address, password, password_confirm} = this.state;
@@ -34,7 +54,7 @@ class EditProfile extends Component {
         <Control type='password' value={password_confirm} onChange={this.change('password_confirm')} 
           isInvalid={password !== password_confirm} />
       </Group>
-      <Button variant='primary'> Submit Changes </Button>
+      <Button variant='primary' onClick={this.onSubmit}> Submit Changes </Button>
     </>
 
   }

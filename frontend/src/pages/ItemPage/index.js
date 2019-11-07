@@ -4,6 +4,8 @@ import {bindActionCreators} from 'redux';
 import Error from '../../components/error';
 import {addItem, modifyItem, removeItem} from '../../redux/actions';
 
+import Recommendation from './recommendation';
+
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Col from 'react-bootstrap/Col';
@@ -68,7 +70,8 @@ class ItemPage extends Component {
           <Button onClick={this.decrementCount}>-</Button>
         </Row>
 
-
+        <h3>Recommended for you:</h3>
+        <Recommendation />
 
     </Container>);
   }

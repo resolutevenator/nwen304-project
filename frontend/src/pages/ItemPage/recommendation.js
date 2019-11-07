@@ -1,12 +1,7 @@
 import React, {Component} from 'react';
+import {getRecommendation} from '../../redux/actions/remote';
+import ItemView from '../../components/item_list';
 
-
-import {ROOT_URL} from '../../redux/actions/remote';
-
-function getRecommendation(id) {
-  return fetch(`${ROOT_URL}/recommend`)
-    .then(x => x.json())
-}
 
 
 class Recommendation extends Component {
@@ -27,7 +22,7 @@ class Recommendation extends Component {
     if (this.state.loading)
       return 'LOADING';
 
-    return <div>{JSON.stringify(this.state)}</div>;
+    return <ItemView items={this.state.recommendations.map(x=>x.bookid)} />;
   }
 }
 

@@ -14,7 +14,7 @@ function profilePage(props) {
 
   return (<Container>
     Hello {JSON.stringify(props)}
-    <EditProfile email={props.profile.email} address={props.profile.address} />
+    <EditProfile email={props.profile.email} address={props.profile.address} token={props.authtoken}/>
     <h1>Shipments</h1>
     <History token={props.authtoken}/>
   </Container>);

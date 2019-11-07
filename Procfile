@@ -1,1 +1,1 @@
-web: cd backend && node index.js
+web: cd frontend && yarn build && cd ../backend && node index.js

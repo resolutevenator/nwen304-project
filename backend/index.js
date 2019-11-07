@@ -28,11 +28,10 @@ app.use(
 );
 
 
-
 passport.use(new GoogleStrategy({
   clientID: GOOGLE_CLIENT_ID,
   clientSecret: GOOGLE_CLIENT_SECRET,
-  callbackURL: 'http://localhost:5000/auth/google/callback'
+  callbackURL: `${process.env.url}/auth/google/callback`
   },
   function(accessToken, refreshToken, profile, done) {
       done(null, profile.emails[0].value);
@@ -78,6 +77,8 @@ app.post('/neworder', db.postNewOrder);
 app.post('/login', db.postLogin);
 
 app.put('/user/updatepassword', db.updatePassword);
+
+app.put('/user/updateAccount', db.updateAccount);
 
 app.get('/recommend', db.recommend);
 

@@ -1,5 +1,5 @@
 import {REFRESH_ITEMS, LOGIN, GET_USER_DATA} from '.';
-export const ROOT_URL = '//localhost:5000'
+export const ROOT_URL = ''
 
 
 const sendData = (url, method, data) => fetch(url, {
@@ -59,6 +59,8 @@ export const registerUser = (email, password, address) => sendData(`${ROOT_URL}/
 
 export const resetPw = (email, code, password) => sendData(`${ROOT_URL}/user/updatepassword`, 'PUT', {email, newPassword: password, code});
 
+export const userUpdate = d => sendData(`${ROOT_URL}/user/updateAccount`, 'PUT', d);
+
 export const getOrderHistory = (token) => sendData(`${ROOT_URL}/user/orders`, 'POST', {token});
 
 
@@ -71,3 +73,5 @@ export const modifyOrder = (token, email, time, current_status, productid, cost)
 export const getAllEmails = token => sendData(`${ROOT_URL}/admin/allEmails`, 'POST', {token});
 
 export const getAllOrders = token => sendData(`${ROOT_URL}/admin/allOrders`, 'POST', {token});
+
+export const getRecommendation = () => fetch(`${ROOT_URL}/recommend`).then(x => x.json());
