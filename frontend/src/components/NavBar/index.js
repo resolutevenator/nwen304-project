@@ -19,7 +19,7 @@ function nav(props) {
   let {items, logout, usertype} = props;
   items = items >= 10 ? '9+' : items;
   return <NavBar bg='dark' variant='dark'>
-    <Link to='/'><Brand>Shit Book Shop</Brand></Link>
+    <Link to='/'><Brand>Group 19 Shop</Brand></Link>
     <Nav className='mr-auto'>
       {NavLink('Home', '/')}
       {usertype !== null ? NavLink('Profile', '/profile') : NavLink('Login', '/login')}
