@@ -53,7 +53,11 @@ class ItemPage extends Component {
     return (<Container>
         <Row>
           <Col>
-            {JSON.stringify(item)}
+            {item.title} - {item.author}
+            <br />
+            {item.category}
+            <br />
+            x {item.stock}
           </Col>
           <Col>
         <Button variant={buttonVariant} onClick={this.changeCart}>{buttonText}</Button>

@@ -12,6 +12,18 @@ Using: Postgresql version 10.10-2
 2. Create all the tables using `psql -U <user> -d nwen304_groupproject -f ~/database.data`
 3. Insert the data using `psql -U <user> -d nwen304_groupproject -f ~/data.data`
 
+
+##Locally running
+
+Write a .env file in `backend` with the following format
+
+```bash
+DATABASE_URL="postgres://postgres:password@localhost:5432/nwen304_groupproject"
+EMAIL_ADDRESS="nwen304reset@gmail.com"
+EMAIL_PASSWORD="test123"
+url="http://localhost:5000"
+```
+
 ## Deployment Instructions:
 
 Using Heroku: [Getting Started](https://devcenter.heroku.com/articles/getting-started-with-nodejs)

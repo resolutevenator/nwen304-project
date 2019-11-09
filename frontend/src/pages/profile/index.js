@@ -13,7 +13,7 @@ function profilePage(props) {
     return <Redirect to={'/login'} />;
 
   return (<Container>
-    Hello {JSON.stringify(props)}
+    Hello {props.profile.email}!
     <EditProfile email={props.profile.email} address={props.profile.address} token={props.authtoken}/>
     <h1>Shipments</h1>
     <History token={props.authtoken}/>

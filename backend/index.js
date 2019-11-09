@@ -98,12 +98,21 @@ app.get('/auth/google/callback',
   session: false}),
   db.oAuthLogin);
 
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static('build'));
+
+  const path = require('path');
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'build', 'index.html'));
+  })
+} else {
 app.use(express.static('../frontend/build'));
 
 const path = require('path');
 app.get('*', (req, res) => {
   res.sendFile(path.resolve(__dirname, '..', 'frontend', 'build', 'index.html'));
 })
+}
 
 app.listen(port, function () {
     console.log(`Example app listening on port ${port}!`);

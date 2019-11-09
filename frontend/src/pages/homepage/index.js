@@ -12,7 +12,6 @@ class HomePage extends Component {
       <Jumbotron>
         <Container>
         <h1> Hello and Welcome to Group 19 Book Services! </h1>
-          <p>{JSON.stringify(this.props)}</p>
         </Container>
       </Jumbotron>
     </>;
